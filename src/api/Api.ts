@@ -31,7 +31,7 @@ export default interface Api {
 
     routeWithDispatch(args: RoutingArgs, zoom: boolean): void
 
-    geocode(query: string, provider: string, additionalOptions?: Record<string, string>): Promise<GeocodingResult>
+    geocode(query: string, additionalOptions?: Record<string, string>): Promise<GeocodingResult>
 
     reverseGeocode(query: POIQuery, bbox: Bbox): Promise<ReverseGeocodingHit[]>
 
@@ -86,19 +86,16 @@ export class ApiImpl implements Api {
 
     async geocode(
         query: string,
-        provider: string,
-        additionalOptions?: Record<string, string>,
+        additionalOptions?: Record<string, string>
     ): Promise<GeocodingResult> {
         if (!this.supportsGeocoding())
             return {
-                hits: [],
-                took: 0,
+                features: []
             }
-        const url = this.getGeocodingURLWithKey('geocode')
+        const url = this.getGeocodingURLWithKey('')
         url.searchParams.append('q', query)
-        url.searchParams.append('provider', provider)
         const langAndCountry = getTranslation().getLang().split('_')
-        url.searchParams.append('locale', langAndCountry.length > 0 ? langAndCountry[0] : 'en')
+        url.searchParams.append('lang', langAndCountry.length > 0 ? langAndCountry[0] : 'en')
 
         // routing makes not much sense between areas and it is unclear if the center is on a road
         url.searchParams.append('osm_tag', '!place:county')
@@ -259,13 +256,11 @@ export class ApiImpl implements Api {
 
     private getRoutingURLWithKey(endpoint: string) {
         const url = new URL(this.routingApi + endpoint)
-        url.searchParams.append('key', this.apiKey)
         return url
     }
 
     private getGeocodingURLWithKey(endpoint: string) {
         const url = new URL(this.geocodingApi + endpoint)
-        url.searchParams.append('key', this.apiKey)
         return url
     }
 

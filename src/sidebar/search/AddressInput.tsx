@@ -14,7 +14,7 @@ import CurrentLocationIcon from './current-location.svg'
 import styles from './AddressInput.module.css'
 import Api, { getApi } from '@/api/Api'
 import { tr } from '@/translation/Translation'
-import { coordinateToText, hitToItem, nominatimHitToItem, textToCoordinate } from '@/Converters'
+import { coordinateToPair, coordinateToText, prepareHit, hitToItem, textToCoordinate } from '@/Converters'
 import { useMediaQuery } from 'react-responsive'
 import PopUp from '@/sidebar/search/PopUp'
 import PlainButton from '@/PlainButton'
@@ -55,20 +55,21 @@ export default function AddressInput(props: AddressInputProps) {
     // has focus and geocoding results are empty
     const [autocompleteItems, setAutocompleteItems] = useState<AutocompleteItem[]>([])
     const [geocoder] = useState(
-        new Geocoder(getApi(), (query, provider, hits) => {
+        new Geocoder(getApi(), (query, hits) => {
             const items: AutocompleteItem[] = []
             const parseResult = AddressParseResult.parse(query, true)
             if (parseResult.hasPOIs()) items.push(new POIQueryItem(parseResult))
 
             hits.forEach(hit => {
-                const obj = hitToItem(hit)
+                const obj = hitToItem(prepareHit(hit))
+                const point = {lat: hit.geometry.coordinates[1], lng: hit.geometry.coordinates[0]}
                 items.push(
                     new GeocodingItem(
                         obj.mainText,
                         obj.secondText,
-                        hit.point,
-                        hit.extent ? hit.extent : getBBoxFromCoord(hit.point),
-                    ),
+                        point,
+                        hit.extent ? hit.extent : getBBoxFromCoord(point)
+                    )
                 )
             })
 
@@ -153,11 +154,11 @@ export default function AddressInput(props: AddressInputProps) {
                         } else if (highlightedResult < 0 && !props.point.isInitialized) {
                             // by default use the first result, otherwise the highlighted one
                             getApi()
-                                .geocode(text, 'nominatim')
+                                .geocode(text)
                                 .then(result => {
-                                    if (result && result.hits.length > 0) {
-                                        const hit: GeocodingHit = result.hits[0]
-                                        const res = nominatimHitToItem(hit)
+                                    if (result && result.features.length > 0) {
+                                        const hit: GeocodingHit = result.features[0]
+                                        const res = hitToItem(prepareHit(hit))
                                         props.onLocationSelected(res.mainText, res.secondText, hit.point)
                                     } else if (item instanceof GeocodingItem) {
                                         props.onLocationSelected(item.mainText, item.secondText, item.point)
@@ -389,9 +390,9 @@ class Geocoder {
     private requestId = 0
     private readonly timeout = new Timout(100)
     private readonly api: Api
-    private readonly onSuccess: (query: string, provider: string, hits: GeocodingHit[]) => void
+    private readonly onSuccess: (query: string, hits: GeocodingHit[]) => void
 
-    constructor(api: Api, onSuccess: (query: string, provider: string, hits: GeocodingHit[]) => void) {
+    constructor(api: Api, onSuccess: (query: string, hits: GeocodingHit[]) => void) {
         this.api = api
         this.onSuccess = onSuccess
     }
@@ -407,19 +408,19 @@ class Geocoder {
 
     async requestAsync(query: string, bias: Coordinate | undefined, zoom: number | undefined) {
         zoom = Math.round(zoom ?? 11)
-        const provider = 'default'
         const currentId = this.getNextId()
         this.timeout.cancel()
         if (!query || query.length < 2) return
 
         await this.timeout.wait()
         try {
-            const options: Record<string, string> = bias
-                ? { point: coordinateToText(bias), location_bias_scale: '0.5', zoom: '' + (zoom + 1) }
+            const point = coordinateToPair(bias)
+            const options: Record<string, string> = point 
+                ? { lat: point[0], lon: point[1], location_bias_scale: '0.5', zoom: '' + (zoom + 1) }
                 : {}
-            const result = await this.api.geocode(query, provider, options)
-            const hits = Geocoder.filterDuplicates(result.hits)
-            if (currentId === this.requestId) this.onSuccess(query, provider, hits)
+            const result = await this.api.geocode(query, options)
+            const hits = Geocoder.filterDuplicates(result.features)
+            if (currentId === this.requestId) this.onSuccess(query, hits)
         } catch (reason) {
             throw Error('Could not get geocoding results because: ' + reason)
         }
@@ -484,11 +485,11 @@ export class ReverseGeocoder {
                     location_bias_scale: '0.5',
                     zoom: '9',
                 }
-                const fwdSearch = await this.api.geocode(parseResult.location, 'default', options)
-                if (fwdSearch.hits.length > 0) {
-                    const bbox = fwdSearch.hits[0].extent
-                        ? fwdSearch.hits[0].extent
-                        : getBBoxFromCoord(fwdSearch.hits[0].point, 0.01)
+                const fwdSearch = await this.api.geocode(parseResult.location, options)
+                if (fwdSearch.features.length > 0) {
+                    const bbox = fwdSearch.features[0].extent
+                        ? fwdSearch.features[0].extent
+                        : getBBoxFromCoord(fwdSearch.features[0].point, 0.01)
                     if (bbox) hits = await this.api.reverseGeocode(parseResult.query, bbox)
                 }
             } else {

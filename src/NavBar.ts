@@ -116,24 +116,24 @@ export default class NavBar {
                 if (result.hasPOIs() && result.location) {
                     // two stage POI search: 1. use extracted location to get coordinates 2. do reverse geocoding with this coordinates
                     return getApi()
-                        .geocode(result.location, 'nominatim')
+                        .geocode(result.location)
                         .then(res => {
-                            if (res.hits.length == 0) return p
+                            if (res.features.length == 0) return p
                             getApi()
-                                .reverseGeocode(result.query, res.hits[0].extent)
+                                .reverseGeocode(result.query, res.features[0].extent)
                                 .then(res => AddressParseResult.handleGeocodingResponse(res, result))
                             return p
                         })
                 }
                 return (
                     getApi()
-                        .geocode(p.queryText, 'nominatim')
+                        .geocode(p.queryText)
                         .then(res => {
-                            if (res.hits.length == 0) return p
+                            if (res.features.length == 0) return p
                             return {
                                 ...p,
-                                queryText: res.hits[0].name,
-                                coordinate: { lat: res.hits[0].point.lat, lng: res.hits[0].point.lng },
+                                queryText: res.features[0].name,
+                                coordinate: { lat: res.features[0].point.lat, lng: res.features[0].point.lng },
                                 isInitialized: true,
                             }
                         })

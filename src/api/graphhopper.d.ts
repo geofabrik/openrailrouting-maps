@@ -134,22 +134,43 @@ export interface ReverseGeocodingHit {
 }
 
 export interface GeocodingResult {
-    readonly hits: GeocodingHit[]
-    readonly took: number
+    readonly features: GeocodingHit[]
 }
 
-export interface GeocodingHit {
-    readonly point: Coordinate
-    readonly extent: Bbox
+export interface PhotonPoint {
+    readonly type: string
+    readonly coordinates: [number,number]
+}
+
+export interface PhotonHitProperties {
+    readonly extent?: Bbox | null
     readonly osm_id: string
     readonly osm_type: string
     readonly osm_key: string
     readonly osm_value: string
-    readonly name: string
-    readonly country: string
-    readonly city: string
-    readonly state: string
-    readonly street: string
-    readonly housenumber: string
-    readonly postcode: string
+    readonly name?: string | null
+    readonly country?: string | null
+    readonly city?: string | null
+    readonly state?: string | null
+    readonly street?: string | null
+    readonly housenumber?: string | null
+    readonly postcode?: string | null
+}
+
+export interface GeocodingHit {
+    point: Coordinate
+    readonly geometry: PhotonPoint
+    extent: Bbox
+    readonly properties: PhotonHitProperties
+    osm_id: string
+    osm_type: string
+    osm_key: string
+    osm_value: string
+    name: string
+    country: string
+    city: string
+    state: string
+    street?: string | null
+    housenumber?: string | null
+    postcode: string
 }

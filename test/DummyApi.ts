@@ -13,8 +13,7 @@ import { POIAndQuery, POIQuery } from '@/pois/AddressParseResult'
 export default class DummyApi implements Api {
     geocode(query: string): Promise<GeocodingResult> {
         return Promise.resolve({
-            took: 0,
-            hits: [],
+            features: [],
         })
     }
 

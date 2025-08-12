@@ -51,6 +51,21 @@ export function metersToShortText(meters: number, showDistanceInMiles: boolean) 
     }
 }
 
+/**
+ * Read photon geocoding result and transforms it into a structure used by
+ * the commercial GraphHopper geocoding API.
+ */
+export function prepareHit(hit: GeocodingHit) {
+    hit.street = hit.street ? hit.street : (hit.properties.street || null)
+    hit.name = hit.name ? hit.name : (hit.properties.name || '')
+    hit.housenumber = hit.housenumber ? hit.housenumber : (hit.properties.housenumber || null)
+    hit.city = hit.properties.city || ''
+    hit.postcode = hit.properties.postcode || ''
+    hit.state = hit.properties.state || ''
+    hit.country = hit.properties.country || ''
+    return hit
+}
+
 export function hitToItem(hit: GeocodingHit) {
     const mainText =
         hit.street && hit.name.indexOf(hit.street) >= 0
@@ -83,7 +98,7 @@ function toCity(hit: GeocodingHit) {
 export function nominatimHitToItem(hit: GeocodingHit) {
     const name = hit.name ? hit.name : hit.country
     const street = hit.street ? hit.street + (hit.housenumber ? ' ' + hit.housenumber : '') : ''
-    const mainText = hit.street && name.indexOf(hit.street) == 0 ? street : name.split(',')[0]
+    const mainText = hit.street && name && name.indexOf(hit.street) == 0 ? street : (name ? name.split(',')[0] : '')
     return {
         mainText: mainText,
         secondText:
@@ -93,6 +108,10 @@ export function nominatimHitToItem(hit: GeocodingHit) {
             (!mainText.includes(hit.state) && hit.state ? hit.state + ', ' : '') +
             hit.country,
     }
+}
+
+export function coordinateToPair(coord: Coordinate | undefined): [string, string] | null {
+    return coord ? [(Math.round(coord.lat * 1e6) / 1e6).toString(), (Math.round(coord.lng * 1e6) / 1e6).toString()] : null
 }
 
 export function coordinateToText(coord: Coordinate): string {
