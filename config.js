@@ -17,8 +17,10 @@ const config = {
         kurviger: 'missing_api_key',
         tracestrack: 'missing_api_key',
     },
-    // if true there will be an option to enable the GraphHopper routing graph and the urban density visualization in the layers menu
+    // if true there will be an option to enable the GraphHopper routing graph visualization in the layers menu
     routingGraphLayerAllowed: true,
+    // if true there will be an option to enable the GraphHopper urban density visualization in the layers menu
+    urbanDensityLayerAllowed: false,
     // parameters used for the routing request generation
     request: {
         details: [

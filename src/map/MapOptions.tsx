@@ -71,7 +71,6 @@ const Options = function ({ storeState, notifyChanged }: OptionsProps) {
                 ))}
             </div>
             {config.routingGraphLayerAllowed && (
-                <>
                     <div className={styles.option}>
                         <input
                             type="checkbox"
@@ -84,6 +83,8 @@ const Options = function ({ storeState, notifyChanged }: OptionsProps) {
                         />
                         <label htmlFor="routing-graph-checkbox">Show Routing Graph</label>
                     </div>
+            )}
+            {config.urbanDensityLayerAllowed && (
                     <div className={styles.option}>
                         <input
                             type="checkbox"
@@ -96,7 +97,6 @@ const Options = function ({ storeState, notifyChanged }: OptionsProps) {
                         />
                         <label htmlFor="urban-density-checkbox">Show Urban Density</label>
                     </div>
-                </>
             )}
             {config.externalMVTLayer && (
                 <>

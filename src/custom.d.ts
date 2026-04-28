@@ -23,6 +23,7 @@ declare module 'config' {
         snapPreventions: string[]
     }
     const routingGraphLayerAllowed: boolean
+    const urbanDensityLayerAllowed: boolean
     const externalMVTLayer: {
         url: string
         styles: {
