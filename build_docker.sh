@@ -7,7 +7,7 @@ SCRIPTDIR=$(dirname $0)
 cd $SCRIPTDIR
 
 HASH=$(git log -n 1 --pretty=format:"%H")
-TAG=openrailroutikng-maps:$HASH
+TAG=openrailrouting-maps:$HASH
 
 echo "Building image $TAG"
 
