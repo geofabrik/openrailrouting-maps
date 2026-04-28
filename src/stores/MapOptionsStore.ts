@@ -9,13 +9,14 @@ import {
 } from '@/actions/Actions'
 import config from 'config'
 
-const osApiKey = config.keys.omniscale
-const mapTilerKey = config.keys.maptiler
-const thunderforestApiKey = config.keys.thunderforest
-const kurvigerApiKey = config.keys.kurviger
-
 const osmAttribution =
-    '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
+    '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors (ODbL)'
+const osmFRAttr =
+    'rendering by <a href="https://www.openstreetmap.fr/mentions-legales/" target="_blank">OpenStreetMap France</a>'
+const osmDEAttr =
+    'rendering by <a href="https://openstreetmap.de/germanstyle/" target="_blank">OpenStreetMap Deutschland</a>'
+const osmCHAttr =
+    'rendering by <a href="https://sosm.ch/projects/tile-service/" target="_blank">SOSM, elevation: ASTER GDEM, EarthEnv-DEM90, CDEM contains information under OGL Canada</a>'
 
 export interface MapOptionsStoreState {
     styleOptions: StyleOption[]
@@ -51,12 +52,6 @@ const isRetina = window.devicePixelRatio > 1 || (window.matchMedia && window.mat
 const tilePixelRatio = isRetina ? 2 : 1
 const retina2x = isRetina ? '@2x' : ''
 
-const mapTilerSatellite: VectorStyle = {
-    name: 'MapTiler Satellite',
-    type: 'vector',
-    url: 'https://api.maptiler.com/maps/hybrid/style.json?key=' + mapTilerKey,
-    attribution: osmAttribution + ', &copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a>',
-}
 const osmOrg: RasterStyle = {
     name: 'OpenStreetMap',
     type: 'raster',
@@ -64,109 +59,34 @@ const osmOrg: RasterStyle = {
     attribution: osmAttribution,
     maxZoom: 19,
 }
-const osmCycl: RasterStyle = {
-    name: 'Cyclosm',
+
+const osmDE: RasterStyle = {
+    name: 'OpenStreetMap.de',
     type: 'raster',
-    url: [
-        'https://a.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png',
-        'https://b.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png',
-        'https://c.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png',
-    ],
-    attribution:
-        osmAttribution +
-        ', &copy; <a href="https://github.com/cyclosm/cyclosm-cartocss-style/releases" target="_blank">CyclOSM</a>',
+    url: ['https://tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png'],
+    attribution: osmAttribution + osmDEAttr,
     maxZoom: 19,
 }
 
-const omniscale: RasterStyle = {
-    name: 'Omniscale',
+const osmCH: RasterStyle = {
+    url: ['https://tile.osm.ch/switzerland/{z}/{x}/{y}.png'],
+    name: 'OpenStreetMap.de',
     type: 'raster',
-    url: [
-        'https://maps.omniscale.net/v2/' + osApiKey + '/style.default/{z}/{x}/{y}.png' + (isRetina ? '?hq=true' : ''),
-    ],
-    attribution: osmAttribution + ', &copy; <a href="https://maps.omniscale.com/" target="_blank">Omniscale</a>',
-    tilePixelRatio: tilePixelRatio,
+    attribution: osmAttribution + osmCHAttr,
 }
-const esriSatellite: RasterStyle = {
-    name: 'Esri Satellite',
+
+const osmFR: RasterStyle = {
+    url: ['https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png'],
+    name: 'OpenStreetMap.de',
     type: 'raster',
-    url: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-    attribution:
-        '&copy; <a href="http://www.esri.com/" target="_blank">Esri</a>' +
-        ' i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-    maxZoom: 18,
-}
-const tfTransport: RasterStyle = {
-    name: 'TF Transport',
-    type: 'raster',
-    url: [
-        'https://a.tile.thunderforest.com/transport/{z}/{x}/{y}' + retina2x + '.png?apikey=' + thunderforestApiKey,
-        'https://b.tile.thunderforest.com/transport/{z}/{x}/{y}' + retina2x + '.png?apikey=' + thunderforestApiKey,
-        'https://c.tile.thunderforest.com/transport/{z}/{x}/{y}' + retina2x + '.png?apikey=' + thunderforestApiKey,
-    ],
-    attribution:
-        osmAttribution +
-        ', <a href="https://www.thunderforest.com/maps/transport/" target="_blank">Thunderforest Transport</a>',
-    tilePixelRatio: tilePixelRatio,
-}
-const tfCycle: RasterStyle = {
-    name: 'TF Cycle',
-    type: 'raster',
-    url: [
-        'https://a.tile.thunderforest.com/cycle/{z}/{x}/{y}' + retina2x + '.png?apikey=' + thunderforestApiKey,
-        'https://b.tile.thunderforest.com/cycle/{z}/{x}/{y}' + retina2x + '.png?apikey=' + thunderforestApiKey,
-        'https://c.tile.thunderforest.com/cycle/{z}/{x}/{y}' + retina2x + '.png?apikey=' + thunderforestApiKey,
-    ],
-    attribution:
-        osmAttribution +
-        ', <a href="https://www.thunderforest.com/maps/opencyclemap/" target="_blank">Thunderforest Cycle</a>',
-    tilePixelRatio: tilePixelRatio,
-}
-const tfOutdoors: RasterStyle = {
-    name: 'TF Outdoors',
-    type: 'raster',
-    url: [
-        'https://a.tile.thunderforest.com/outdoors/{z}/{x}/{y}' + retina2x + '.png?apikey=' + thunderforestApiKey,
-        'https://b.tile.thunderforest.com/outdoors/{z}/{x}/{y}' + retina2x + '.png?apikey=' + thunderforestApiKey,
-        'https://c.tile.thunderforest.com/outdoors/{z}/{x}/{y}' + retina2x + '.png?apikey=' + thunderforestApiKey,
-    ],
-    attribution:
-        osmAttribution +
-        ', <a href="https://www.thunderforest.com/maps/outdoors/" target="_blank">Thunderforest Outdoors</a>',
-    tilePixelRatio: tilePixelRatio,
-}
-const mapillion: VectorStyle = {
-    name: 'Mapilion',
-    type: 'vector',
-    url: 'https://tiles.mapilion.com/assets/osm-bright/style.json?key=' + kurvigerApiKey,
-    attribution:
-        osmAttribution +
-        ', &copy; <a href="https://mapilion.com/attribution" target="_blank">Mapilion</a> <a href="http://www.openmaptiles.org/" target="_blank">&copy; OpenMapTiles</a>',
-}
-const wanderreitkarte: RasterStyle = {
-    name: 'WanderReitKarte',
-    type: 'raster',
-    url: [
-        'https://topo.wanderreitkarte.de/topo/{z}/{x}/{y}.png',
-        'https://topo2.wanderreitkarte.de/topo/{z}/{x}/{y}.png',
-        'https://topo3.wanderreitkarte.de/topo/{z}/{x}/{y}.png',
-        'https://topo4.wanderreitkarte.de/topo/{z}/{x}/{y}.png',
-    ],
-    attribution: osmAttribution + ', <a href="https://wanderreitkarte.de" target="_blank">WanderReitKarte</a>',
-    maxZoom: 18,
+    attribution: osmAttribution + osmFRAttr,
 }
 
 const styleOptions: StyleOption[] = [
-    omniscale,
     osmOrg,
-    osmCycl,
-    esriSatellite,
-    mapTilerSatellite,
-    tfTransport,
-    tfCycle,
-    tfOutdoors,
-    mapillion,
-    wanderreitkarte,
+    osmDE,
+    osmCH,
+    osmFR,
 ]
 
 export default class MapOptionsStore extends Store<MapOptionsStoreState> {
@@ -181,7 +101,7 @@ export default class MapOptionsStore extends Store<MapOptionsStoreState> {
                 `Could not find tile layer specified in config: '${config.defaultTiles}', using default instead`,
             )
         return {
-            selectedStyle: selectedStyle ? selectedStyle : omniscale,
+            selectedStyle: selectedStyle ? selectedStyle : osmOrg,
             styleOptions,
             routingGraphEnabled: false,
             urbanDensityEnabled: false,
