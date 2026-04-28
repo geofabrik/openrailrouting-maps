@@ -36,7 +36,7 @@ import CurrentLocationStore from '@/stores/CurrentLocationStore'
 import { setDistanceFormat } from '@/Converters'
 import { AddressParseResult } from '@/pois/AddressParseResult'
 
-console.log(`Source code: https://github.com/graphhopper/graphhopper-maps/tree/${GIT_SHA}`)
+console.log(`Source code: https://github.com/geofabrik/openrailrouting-maps/tree/${GIT_SHA}`)
 
 const url = new URL(window.location.href)
 const locale = url.searchParams.get('locale')

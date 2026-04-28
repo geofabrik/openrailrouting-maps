@@ -1,9 +1,9 @@
 {
-    "name": "graphhopper-maps",
-    "homepage": "https://graphhopper.com/maps/",
+    "name": "openrailrouting-maps",
+    "homepage": "https://routing.openrailrouting.org/",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/graphhopper/graphhopper-maps.git"
+        "url": "git+https://github.com/geofabrik/openrailrouting-maps.git"
     },
     "version": "0.0.1",
     "license": "Apache-2.0",
