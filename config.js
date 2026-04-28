@@ -18,7 +18,7 @@ const config = {
         tracestrack: 'missing_api_key',
     },
     // if true there will be an option to enable the GraphHopper routing graph and the urban density visualization in the layers menu
-    routingGraphLayerAllowed: false,
+    routingGraphLayerAllowed: true,
     // parameters used for the routing request generation
     request: {
         details: [
