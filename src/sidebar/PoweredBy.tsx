@@ -14,7 +14,7 @@ export default function PoweredBy() {
                 </a>
             </div>
             <div className={styles.infoLine}>
-                <a href="https://www.graphhopper.com/maps-route-planner/">{tr('info')}</a>
+                { config.info && <a href={config.info}>{tr('info')}</a> }
                 { config.docs && <a href={config.docs}>{tr('documentation')}</a> }
                 { config.backend_sources && <a href={config.backend_sources}>{tr('source code (backend)')}</a> }
                 { config.frontend_sources && <a href={config.frontend_sources}>{tr('source code (frontend)')}</a> }
