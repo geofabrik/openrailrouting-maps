@@ -18,6 +18,9 @@ declare module 'config' {
         thunderforest: string
         kurviger: string
     }
+    const docs: string
+    const backend_sources: string
+    const frontend_sources: string
     const imprint: string
     const privacy: string
     const terms: string

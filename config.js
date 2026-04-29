@@ -17,6 +17,12 @@ const config = {
         kurviger: 'missing_api_key',
         tracestrack: 'missing_api_key',
     },
+    // link to API documentation, set to null if you want to omit it
+    docs: 'https://routing.openrailrouting.org/railway_routing/docs/',
+    // link to source code of the backend, set to null if you want to omit it
+    backend_sources: 'https://github.com/geofabrik/openrailrouting',
+    // link to source code of the frontend, set to null if you want to omit it
+    frontend_sources: 'https://github.com/geofabrik/openrailrouting-maps',
     // link to imprint and contact page, set to null if you want to omit it
     imprint: null,
     // link to your privacy policy, set to null if you want to omit it
