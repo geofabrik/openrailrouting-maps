@@ -29,7 +29,7 @@ import { ErrorStoreState } from '@/stores/ErrorStore'
 import { CurrentLocationStoreState } from '@/stores/CurrentLocationStore'
 import Search from '@/sidebar/search/Search'
 import ErrorMessage from '@/sidebar/ErrorMessage'
-import useBackgroundLayer from '@/layers/UseBackgroundLayer'
+import useMapLayer from '@/layers/UseBackgroundLayer'
 import useQueryPointsLayer from '@/layers/UseQueryPointsLayer'
 import usePathsLayer from '@/layers/UsePathsLayer'
 import ContextMenu from '@/layers/ContextMenu'
@@ -117,7 +117,7 @@ export default function App() {
     }, [])
 
     // our different map layers
-    useBackgroundLayer(map, mapOptions.selectedStyle)
+    useMapLayer(map, mapOptions.selectedStyle, mapOptions.selectedOverlayStyles)
     useExternalMVTLayer(map, mapOptions.externalMVTEnabled)
     useMapBorderLayer(map, info.bbox)
     useAreasLayer(map, settings.drawAreasEnabled, query.customModelStr, query.customModelEnabled)

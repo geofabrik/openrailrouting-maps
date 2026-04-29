@@ -1,6 +1,6 @@
 import { coordinateToText } from '@/Converters'
 import Dispatcher from '@/stores/Dispatcher'
-import { ClearPoints, SelectMapLayer, SetBBox, SetQueryPoints, SetVehicleProfile } from '@/actions/Actions'
+import { ClearPoints, SelectMapLayer, SetBBox, SetQueryPoints, SetVehicleProfile, ToggleOverlayMapLayer } from '@/actions/Actions'
 // import the window like this so that it can be mocked during testing
 import { window } from '@/Window'
 import QueryStore, { QueryPoint, QueryPointType, QueryStoreState } from '@/stores/QueryStore'
@@ -38,6 +38,11 @@ export default class NavBar {
 
         result.searchParams.append('profile', queryStoreState.routingProfile.name)
         result.searchParams.append('layer', mapState.selectedStyle.name)
+        // Adding one parameter per overlay in order to avoid escaping the separator
+        // we would need otherwise.
+        mapState.selectedOverlayStyles.forEach((o) => {
+            result.searchParams.append('overlay', o.name)
+        })
         if (queryStoreState.customModelEnabled)
             result.searchParams.append('custom_model', queryStoreState.customModelStr.replace(/\s+/g, ''))
 
@@ -95,6 +100,10 @@ export default class NavBar {
         return url.searchParams.get('layer')
     }
 
+    private static parseOverlayLayer(url: URL): string[] {
+        return url.searchParams.getAll('overlay')
+    }
+
     async updateStateFromUrl() {
         // We update the state several times ourselves, but we don't want to push history entries for each dispatch.
         this.ignoreStateUpdates = true
@@ -149,6 +158,9 @@ export default class NavBar {
 
         const parsedLayer = NavBar.parseLayer(url)
         if (parsedLayer) Dispatcher.dispatch(new SelectMapLayer(parsedLayer))
+        NavBar.parseOverlayLayer(url).forEach(
+            o => Dispatcher.dispatch(new ToggleOverlayMapLayer(o, true))
+        )
 
         this.ignoreStateUpdates = false
     }

@@ -6,14 +6,14 @@ import ImageTile from 'ol/ImageTile'
 import { XYZ } from 'ol/source'
 import { apply } from 'ol-mapbox-style'
 
-export default function useBackgroundLayer(map: Map, styleOption: StyleOption) {
+export default function useMapLayer(map: Map, styleOption: StyleOption, overlayStyleOptions: StyleOption[]) {
     useEffect(() => {
-        removeCurrentBackgroundLayers(map)
-        addNewBackgroundLayers(map, styleOption)
+        removeCurrentMapLayers(map)
+        addNewMapLayers(map, styleOption, overlayStyleOptions)
         return () => {
-            removeCurrentBackgroundLayers(map)
+            removeCurrentMapLayers(map)
         }
-    }, [map, styleOption])
+    }, [map, styleOption, overlayStyleOptions])
 
     // Pointer cursor over interactive features — registered once, independent of style changes
     useEffect(() => {
@@ -30,18 +30,22 @@ export default function useBackgroundLayer(map: Map, styleOption: StyleOption) {
     }, [map])
 }
 
-function removeCurrentBackgroundLayers(map: Map) {
+function removeCurrentMapLayers(map: Map) {
     const backgroundLayers = map
         .getLayers()
         .getArray()
         .filter(l => {
             // vector layers added via olms#addLayers have the mapbox-source key
-            return l.get('mapbox-source') || l.get('background-raster-layer')
+            return l.get('mapbox-source') || l.get('background-raster-layer') || l.get('overlay-raster-layer')
         })
     backgroundLayers.forEach(l => map.removeLayer(l))
 }
 
-function addNewBackgroundLayers(map: Map, styleOption: StyleOption) {
+function addNewMapLayers(map: Map, styleOption: StyleOption, overlayStyleOptions: StyleOption[]) {
+    [styleOption].concat(overlayStyleOptions).forEach((s) => addNewMapLayer(map, s));
+}
+
+function addNewMapLayer(map: Map, styleOption: StyleOption) {
     if (styleOption.type === 'vector') {
         // todo: handle promise return value?
         apply(map, styleOption.url)
@@ -59,8 +63,13 @@ function addNewBackgroundLayers(map: Map, styleOption: StyleOption) {
                     img.src = src
                 },
             }),
+            opacity: rasterStyle.overlay ? 0 : 1,
         })
-        tileLayer.set('background-raster-layer', true)
+        if (rasterStyle.overlay) {
+            tileLayer.set('overlay-raster-layer', true)
+        } else {
+            tileLayer.set('background-raster-layer', true)
+        }
         map.addLayer(tileLayer)
     }
 }

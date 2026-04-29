@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import styles from './MapOptions.module.css'
 import { MapOptionsStoreState } from '@/stores/MapOptionsStore'
 import Dispatcher from '@/stores/Dispatcher'
-import { SelectMapLayer, ToggleExternalMVTLayer, ToggleRoutingGraph, ToggleUrbanDensityLayer } from '@/actions/Actions'
+import { SelectMapLayer, ToggleOverlayMapLayer, ToggleExternalMVTLayer, ToggleRoutingGraph, ToggleUrbanDensityLayer } from '@/actions/Actions'
 import PlainButton from '@/PlainButton'
 import LayerImg from './layer-group-solid.svg'
 import * as config from 'config'
@@ -70,6 +70,28 @@ const Options = function ({ storeState, notifyChanged }: OptionsProps) {
                     </div>
                 ))}
             </div>
+            <div
+                onChange={e => {
+                    notifyChanged()
+                    onOverlayStyleChange(e.target as HTMLInputElement)
+                }}
+            >
+                {storeState.overlayStyleOptions.map(option => (
+                    <div className={styles.option} key={option.name}>
+                        <input
+                            type="checkbox"
+                            id={option.name}
+                            name={option.name}
+                            value={option.name}
+                            defaultChecked={storeState.selectedOverlayStyles.includes(option)}
+                            disabled={!storeState.isMapLoaded}
+                        />
+                        <label htmlFor={option.name}>
+                            {option.name + (option.type === 'vector' ? ' (Vector)' : '')}
+                        </label>
+                    </div>
+                ))}
+            </div>
             {config.routingGraphLayerAllowed && (
                     <div className={styles.option}>
                         <input
@@ -120,4 +142,8 @@ const Options = function ({ storeState, notifyChanged }: OptionsProps) {
 
 function onStyleChange(target: HTMLInputElement) {
     Dispatcher.dispatch(new SelectMapLayer(target.value))
+}
+
+function onOverlayStyleChange(target: HTMLInputElement) {
+    Dispatcher.dispatch(new ToggleOverlayMapLayer(target.value, target.checked))
 }

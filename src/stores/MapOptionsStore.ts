@@ -3,6 +3,7 @@ import { Action } from '@/stores/Dispatcher'
 import {
     MapIsLoaded,
     SelectMapLayer,
+    ToggleOverlayMapLayer,
     ToggleExternalMVTLayer,
     ToggleRoutingGraph,
     ToggleUrbanDensityLayer,
@@ -17,10 +18,14 @@ const osmDEAttr =
     'rendering by <a href="https://openstreetmap.de/germanstyle/" target="_blank">OpenStreetMap Deutschland</a>'
 const osmCHAttr =
     'rendering by <a href="https://sosm.ch/projects/tile-service/" target="_blank">SOSM, elevation: ASTER GDEM, EarthEnv-DEM90, CDEM contains information under OGL Canada</a>'
+const openrailwaymapAttr =
+    'rendered by <a href="https://openrailwaymap.org/" target="_blank">OpenRailwayMap</a>'
 
 export interface MapOptionsStoreState {
     styleOptions: StyleOption[]
+    overlayStyleOptions: StyleOption[]
     selectedStyle: StyleOption
+    selectedOverlayStyles: StyleOption[]
     isMapLoaded: boolean
     routingGraphEnabled: boolean
     urbanDensityEnabled: boolean
@@ -33,6 +38,8 @@ export interface StyleOption {
     url: string[] | string
     attribution: string
     maxZoom?: number
+    tileSize?: number
+    overlay?: boolean
 }
 
 export interface RasterStyle extends StyleOption {
@@ -64,22 +71,40 @@ const osmDE: RasterStyle = {
     name: 'OpenStreetMap.de',
     type: 'raster',
     url: ['https://tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png'],
-    attribution: osmAttribution + osmDEAttr,
+    attribution: osmAttribution + ' ' + osmDEAttr,
     maxZoom: 19,
 }
 
 const osmCH: RasterStyle = {
     url: ['https://tile.osm.ch/switzerland/{z}/{x}/{y}.png'],
-    name: 'OpenStreetMap.de',
+    name: 'OpenStreetMap.ch',
     type: 'raster',
-    attribution: osmAttribution + osmCHAttr,
+    attribution: osmAttribution + ' ' + osmCHAttr,
 }
 
 const osmFR: RasterStyle = {
     url: ['https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png'],
-    name: 'OpenStreetMap.de',
+    name: 'OpenStreetMap.fr',
     type: 'raster',
-    attribution: osmAttribution + osmFRAttr,
+    attribution: osmAttribution + ' ' + osmFRAttr,
+}
+
+const openrailwaymapStandard: RasterStyle = {
+    url: ['https://tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png'],
+    name: 'OpenRailwayMap Infrastructure',
+    type: 'raster',
+    attribution: osmAttribution + ' ' + openrailwaymapAttr,
+    maxZoom: 19,
+    tilePixelRatio: 2,
+}
+
+const openrailwaymapMaxspeed: RasterStyle = {
+    url: ['https://tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png'],
+    name: 'OpenRailwayMap Maxspeed',
+    type: 'raster',
+    attribution: osmAttribution + ' ' + openrailwaymapAttr,
+    maxZoom: 19,
+    tilePixelRatio: 2,
 }
 
 const styleOptions: StyleOption[] = [
@@ -87,6 +112,11 @@ const styleOptions: StyleOption[] = [
     osmDE,
     osmCH,
     osmFR,
+]
+
+const overlayStyleOptions: StyleOption[] = [
+    openrailwaymapStandard,
+    openrailwaymapMaxspeed,
 ]
 
 export default class MapOptionsStore extends Store<MapOptionsStoreState> {
@@ -102,7 +132,9 @@ export default class MapOptionsStore extends Store<MapOptionsStoreState> {
             )
         return {
             selectedStyle: selectedStyle ? selectedStyle : osmOrg,
+            selectedOverlayStyles: [],
             styleOptions,
+            overlayStyleOptions,
             routingGraphEnabled: false,
             urbanDensityEnabled: false,
             externalMVTEnabled: false,
@@ -117,6 +149,15 @@ export default class MapOptionsStore extends Store<MapOptionsStoreState> {
                 return {
                     ...state,
                     selectedStyle: styleOption,
+                }
+        } else if (action instanceof ToggleOverlayMapLayer) {
+            const newSelection = action.checked ?
+                state.selectedOverlayStyles.concat(state.overlayStyleOptions.filter(o => o.name === action.layer))
+                : state.selectedOverlayStyles.filter(o => o.name !== action.layer)
+            if (newSelection)
+                return {
+                    ...state,
+                    selectedOverlayStyles: newSelection,
                 }
         } else if (action instanceof ToggleRoutingGraph) {
             if (state.routingGraphEnabled === action.routingGraphEnabled) return state

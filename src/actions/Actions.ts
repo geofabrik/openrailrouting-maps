@@ -164,6 +164,16 @@ export class SelectMapLayer implements Action {
     }
 }
 
+export class ToggleOverlayMapLayer implements Action {
+    readonly layer: string
+    readonly checked: boolean
+
+    constructor(layer: string, checked: boolean) {
+        this.layer = layer
+        this.checked = checked
+    }
+}
+
 export class ToggleRoutingGraph implements Action {
     readonly routingGraphEnabled: boolean
 
