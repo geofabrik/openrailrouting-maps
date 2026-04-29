@@ -17,6 +17,12 @@ const config = {
         kurviger: 'missing_api_key',
         tracestrack: 'missing_api_key',
     },
+    // link to imprint and contact page, set to null if you want to omit it
+    imprint: 'https://www.graphhopper.com/imprint/',
+    // link to your privacy policy, set to null if you want to omit it
+    privacy: 'https://www.graphhopper.com/privacy/',
+    // link to your terms of use, set to null if you want to omit it
+    terms: 'https://www.graphhopper.com/terms/',
     // if true there will be an option to enable the GraphHopper routing graph visualization in the layers menu
     routingGraphLayerAllowed: true,
     // if true there will be an option to enable the GraphHopper urban density visualization in the layers menu

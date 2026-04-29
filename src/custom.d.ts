@@ -18,6 +18,9 @@ declare module 'config' {
         thunderforest: string
         kurviger: string
     }
+    const imprint: string
+    const privacy: string
+    const terms: string
     const request: {
         details: string[]
         snapPreventions: string[]

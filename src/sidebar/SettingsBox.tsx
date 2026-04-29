@@ -92,9 +92,9 @@ export default function SettingsBox({ profile }: { profile: RoutingProfile }) {
             <div className={styles.infoLine}>
                 <a href="https://www.graphhopper.com/maps-route-planner/">{tr('info')}</a>
                 <a href="https://github.com/geofabrik/openrailrouting-maps/issues">{tr('feedback')}</a>
-                <a href="https://www.graphhopper.com/imprint/">{tr('imprint')}</a>
-                <a href="https://www.graphhopper.com/privacy/">{tr('privacy')}</a>
-                <a href="https://www.graphhopper.com/terms/">{tr('terms')}</a>
+                { config.imprint && <a href={config.imprint}>{tr('imprint')}</a>}
+                { config.privacy && <a href={config.privacy}>{tr('privacy')}</a>}
+                { config.terms && <a href={config.terms}>{tr('terms')}</a>}
             </div>
         </div>
     )

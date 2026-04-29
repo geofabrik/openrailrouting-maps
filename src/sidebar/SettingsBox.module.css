@@ -72,12 +72,12 @@ input {
     padding: 10px 2px 0 0;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
 }
 
 .infoLine a {
     color: gray;
     text-decoration: none;
+    margin-right: 2ex;
 }
 
 .infoLine a:hover {
