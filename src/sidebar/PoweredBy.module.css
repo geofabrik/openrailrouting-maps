@@ -11,3 +11,22 @@
 .logoContainer {
     display: flex;
 }
+.infoLine {
+    padding: 10px 2px;
+    display: flex;
+    flex-direction: row;
+    font-size: 14px;
+    color: grey;
+    padding: 10px 10px;
+    justify-content: space-evenly;
+}
+
+.infoLine a {
+    color: #444;
+    text-decoration: none;
+    margin-right: 2ex;
+}
+
+.infoLine a:hover {
+    color: black;
+}

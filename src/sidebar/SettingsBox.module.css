@@ -68,28 +68,11 @@ input {
     cursor: pointer;
 }
 
-.infoLine {
-    padding: 10px 2px 0 0;
-    display: flex;
-    flex-direction: row;
-}
-
-.infoLine a {
-    color: gray;
-    text-decoration: none;
-    margin-right: 2ex;
-}
-
-.infoLine a:hover {
-    color: black;
-}
-
 .title {
     font-weight: bold;
 }
 
 .title,
-.infoLine,
 .settingsTable,
 .groupProfileOptionsHeader {
     font-size: 14px;
