@@ -47,4 +47,8 @@ export default class DummyApi implements Api {
     supportsReverseGeocoding(): boolean {
         return true
     }
+
+    supportsAutoComplete(): boolean {
+        return true
+    }
 }

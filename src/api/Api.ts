@@ -38,6 +38,8 @@ export default interface Api {
     supportsGeocoding(): boolean
 
     supportsReverseGeocoding(): boolean
+
+    supportsAutoComplete(): boolean
 }
 
 let api: Api | undefined
@@ -183,6 +185,10 @@ export class ApiImpl implements Api {
 
     supportsReverseGeocoding(): boolean {
         return this.reverseGeocodingEnabled
+    }
+
+    supportsAutoComplete(): boolean {
+        return false
     }
 
     async route(args: RoutingArgs): Promise<RoutingResult> {

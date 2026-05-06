@@ -139,6 +139,8 @@ export default function AddressInput(props: AddressInputProps) {
                     break
                 case 'Enter':
                 case 'Tab':
+                    if (!geocoder.supportsAutoComplete())
+                        startSearch(text)
                     // try to parse input as coordinate. Otherwise query nominatim
                     const coordinate = textToCoordinate(text)
                     if (coordinate) {
@@ -168,7 +170,7 @@ export default function AddressInput(props: AddressInputProps) {
                             props.onLocationSelected(item.mainText, item.secondText, item.point)
                         }
                     }
-                    if (event.key === 'Enter') focusNextOrBlur()
+                    if (geocoder.supportsAutoComplete() && event.key === 'Enter') focusNextOrBlur()
                     break
             }
         },
@@ -194,6 +196,25 @@ export default function AddressInput(props: AddressInputProps) {
     // do not focus on mobile as we would hide the map with the "input"-view
     const focusFirstInput = props.index == 0 && !isSmallScreen
     const isInitialFocus = useRef(focusFirstInput)
+
+    const startSearch = (query: string) => {
+        if (query === '') {
+            geocoder.cancel()
+            setAutocompleteItems(buildRecentItems(undefined, 5, excludeCoord))
+        } else {
+            const coordinate = textToCoordinate(query)
+            if (coordinate) {
+                geocoder.cancel()
+                setAutocompleteItems([])
+            } else {
+                if (query.length < 2) {
+                    setAutocompleteItems(buildRecentItems(query, 5, excludeCoord))
+                }
+                geocoder.request(query, biasCoord, getMap().getView().getZoom())
+            }
+        }
+        props.onChange(query)
+    }
 
     return (
         <div className={containerClass}>
@@ -228,22 +249,8 @@ export default function AddressInput(props: AddressInputProps) {
                     onChange={e => {
                         const query = e.target.value
                         setText(query)
-                        if (query === '') {
-                            geocoder.cancel()
-                            setAutocompleteItems(buildRecentItems(undefined, 5, excludeCoord))
-                        } else {
-                            const coordinate = textToCoordinate(query)
-                            if (coordinate) {
-                                geocoder.cancel()
-                                setAutocompleteItems([])
-                            } else {
-                                if (query.length < 2) {
-                                    setAutocompleteItems(buildRecentItems(query, 5, excludeCoord))
-                                }
-                                geocoder.request(query, biasCoord, getMap().getView().getZoom())
-                            }
-                        }
-                        props.onChange(query)
+                        if (geocoder.supportsAutoComplete())
+                            startSearch(query)
                     }}
                     onKeyDown={onKeypress}
                     onFocus={() => {
@@ -395,6 +402,10 @@ class Geocoder {
     constructor(api: Api, onSuccess: (query: string, hits: GeocodingHit[]) => void) {
         this.api = api
         this.onSuccess = onSuccess
+    }
+
+    supportsAutoComplete(): boolean {
+        return this.api.supportsAutoComplete()
     }
 
     request(query: string, bias: Coordinate | undefined, zoom = 11) {

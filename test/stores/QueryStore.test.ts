@@ -56,6 +56,10 @@ class ApiMock implements Api {
     supportsReverseGeocoding(): boolean {
         return false
     }
+
+    supportsAutoComplete(): boolean {
+        return true
+    }
 }
 
 describe('QueryStore', () => {
