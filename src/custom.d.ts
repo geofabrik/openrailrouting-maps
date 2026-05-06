@@ -10,6 +10,7 @@ declare module 'config' {
 
     const routingApi: string
     const geocodingApi: string
+    const poiSearch: boolean
     const reverseGeocodingEnabled: boolean
     const defaultTiles: string
     const keys: {

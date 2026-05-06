@@ -24,6 +24,7 @@ import { Map } from 'ol'
 import { AddressParseResult } from '@/pois/AddressParseResult'
 import { getMap } from '@/map/map'
 import { calcDist, Coordinate, getBBoxFromCoord } from '@/utils'
+import config from 'config'
 
 export interface AddressInputProps {
     point: QueryPoint
@@ -57,8 +58,10 @@ export default function AddressInput(props: AddressInputProps) {
     const [geocoder] = useState(
         new Geocoder(getApi(), (query, hits) => {
             const items: AutocompleteItem[] = []
-            const parseResult = AddressParseResult.parse(query, true)
-            if (parseResult.hasPOIs()) items.push(new POIQueryItem(parseResult))
+            if (config.poiSearch) {
+                const parseResult = AddressParseResult.parse(query, true)
+                if (parseResult.hasPOIs()) items.push(new POIQueryItem(parseResult))
+            }
 
             hits.forEach(hit => {
                 const obj = hitToItem(prepareHit(hit))

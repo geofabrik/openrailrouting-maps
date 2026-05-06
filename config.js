@@ -7,6 +7,8 @@ const config = {
     reverseGeocodingEnabled: false,
     // the url of the geocoding backend, either use graphhopper.com or point it to another geocoding service. use an empty string to disable the address search
     geocodingApi: 'https://api.openrailwaymap.org/v2/facility',
+    // enable/disable POI search
+    poiSearch: false,
     // the tile layer used by default, see MapOptionsStore.ts for all options
     defaultTiles: 'OpenStreetMap',
     // various api keys used for the GH backend and the different tile providers
