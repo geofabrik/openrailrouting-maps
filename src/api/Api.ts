@@ -4,7 +4,7 @@ import {
     ApiInfo,
     Bbox,
     ErrorResponse,
-    GeocodingResult,
+    GeocodingHit,
     Path,
     RawPath,
     RawResult,
@@ -31,17 +31,19 @@ export default interface Api {
 
     routeWithDispatch(args: RoutingArgs, zoom: boolean): void
 
-    geocode(query: string, additionalOptions?: Record<string, string>): Promise<GeocodingResult>
+    geocode(query: string, additionalOptions?: Record<string, string>): Promise<GeocodingHit[]>
 
     reverseGeocode(query: POIQuery, bbox: Bbox): Promise<ReverseGeocodingHit[]>
 
     supportsGeocoding(): boolean
+
+    supportsReverseGeocoding(): boolean
 }
 
 let api: Api | undefined
 
-export function setApi(routingApi: string, geocodingApi: string, apiKey: string) {
-    api = new ApiImpl(routingApi, geocodingApi, apiKey)
+export function setApi(routingApi: string, geocodingApi: string, reverseGeocodingEnabled: boolean) {
+    api = new ApiImpl(routingApi, geocodingApi, reverseGeocodingEnabled)
 }
 
 export function getApi() {
@@ -54,16 +56,16 @@ export function getApi() {
  * class could be tested but is not available for usage in the app. In Java one would make this package private I guess.
  */
 export class ApiImpl implements Api {
-    private readonly apiKey: string
+    private readonly reverseGeocodingEnabled: boolean
     private readonly routingApi: string
     private readonly geocodingApi: string
     private routeCounter = 0
     private lastRouteNumber = -1
 
-    constructor(routingApi: string, geocodingApi: string, apiKey: string) {
-        this.apiKey = apiKey
+    constructor(routingApi: string, geocodingApi: string, reverseGeocodingEnabled: boolean) {
         this.routingApi = routingApi
         this.geocodingApi = geocodingApi
+        this.reverseGeocodingEnabled = reverseGeocodingEnabled
     }
 
     async info(): Promise<ApiInfo> {
@@ -87,20 +89,13 @@ export class ApiImpl implements Api {
     async geocode(
         query: string,
         additionalOptions?: Record<string, string>
-    ): Promise<GeocodingResult> {
+    ): Promise<GeocodingHit[]> {
         if (!this.supportsGeocoding())
-            return {
-                features: []
-            }
+            return []
         const url = this.getGeocodingURLWithKey('')
         url.searchParams.append('q', query)
         const langAndCountry = getTranslation().getLang().split('_')
         url.searchParams.append('lang', langAndCountry.length > 0 ? langAndCountry[0] : 'en')
-
-        // routing makes not much sense between areas and it is unclear if the center is on a road
-        url.searchParams.append('osm_tag', '!place:county')
-        url.searchParams.append('osm_tag', '!boundary')
-        url.searchParams.append('osm_tag', '!historic')
 
         if (additionalOptions) {
             for (const key in additionalOptions) {
@@ -113,14 +108,14 @@ export class ApiImpl implements Api {
         })
 
         if (response.ok) {
-            return (await response.json()) as GeocodingResult
+            return (await response.json()) as GeocodingHit[]
         } else {
             throw new Error('Geocoding went wrong ' + response.status)
         }
     }
 
     async reverseGeocode(query: POIQuery, bbox: Bbox): Promise<ReverseGeocodingHit[]> {
-        if (!this.supportsGeocoding()) return []
+        if (!this.supportsGeocoding() || !this.supportsReverseGeocoding()) return []
         // why is main overpass api so much faster?
         // const url = 'https://overpass.kumi.systems/api/interpreter'
         const url = 'https://overpass-api.de/api/interpreter'
@@ -184,6 +179,10 @@ export class ApiImpl implements Api {
 
     supportsGeocoding(): boolean {
         return this.geocodingApi !== ''
+    }
+
+    supportsReverseGeocoding(): boolean {
+        return this.reverseGeocodingEnabled
     }
 
     async route(args: RoutingArgs): Promise<RoutingResult> {

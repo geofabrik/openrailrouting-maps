@@ -1,7 +1,7 @@
 import Api from '@/api/Api'
 import {
     ApiInfo,
-    GeocodingResult,
+    GeocodingHit,
     ReverseGeocodingHit,
     RoutingArgs,
     RoutingResult,
@@ -11,10 +11,10 @@ import {
 import { POIAndQuery, POIQuery } from '@/pois/AddressParseResult'
 
 export default class DummyApi implements Api {
-    geocode(query: string): Promise<GeocodingResult> {
-        return Promise.resolve({
-            features: [],
-        })
+    geocode(query: string): Promise<GeocodingHit[]> {
+        return Promise.resolve(
+            [],
+        )
     }
 
     reverseGeocode(query: POIQuery, bbox: Bbox): Promise<ReverseGeocodingHit[]> {
@@ -41,6 +41,10 @@ export default class DummyApi implements Api {
     routeWithDispatch(args: RoutingArgs): void {}
 
     supportsGeocoding(): boolean {
+        return true
+    }
+
+    supportsReverseGeocoding(): boolean {
         return true
     }
 }

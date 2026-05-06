@@ -122,38 +122,40 @@ export class AddressParseResult {
             Dispatcher.dispatch(new SetPOIs([]))
             return
         }
-        const pois = hits
-            .filter(hit => !!hit.point)
-            .map(hit => {
-                const res = hitToItem({
-                    name: hit.tags.name ? hit.tags.name : '',
-                    country: hit.tags['addr:country'],
-                    city: hit.tags['addr:city'],
-                    state: hit.tags['addr:state'],
-                    street: hit.tags['addr:street'],
-                    housenumber: hit.tags['addr:housenumer'],
-                    postcode: hit.tags['addr:postcode'],
-                } as GeocodingHit)
-                return {
-                    name: res.mainText,
-                    osm_id: '' + hit.id,
-                    osm_type: hit.type,
-                    query: parseResult.query,
-                    tags: hit.tags,
-                    icon: parseResult.icon,
-                    coordinate: hit.point,
-                    address: res.secondText,
-                } as POI
-            })
-        const bbox = getBBoxPoints(pois.map(p => p.coordinate))
-        if (bbox) {
-            if (parseResult.location) Dispatcher.dispatch(new SetBBox(bbox))
-            Dispatcher.dispatch(new SetPOIs(pois))
-        } else {
-            console.warn(
-                'invalid bbox for points ' + JSON.stringify(pois) + ' result was: ' + JSON.stringify(parseResult),
-            )
-        }
+	// Return empty list for the time being because we do not have a reverse geocoder yet.
+	return
+        //const pois = hits
+        //    .filter(hit => !!hit.point)
+        //    .map(hit => {
+        //        const res = hitToItem({
+        //            name: hit.tags.name ? hit.tags.name : '',
+        //            country: hit.tags['addr:country'],
+        //            city: hit.tags['addr:city'],
+        //            state: hit.tags['addr:state'],
+        //            street: hit.tags['addr:street'],
+        //            housenumber: hit.tags['addr:housenumer'],
+        //            postcode: hit.tags['addr:postcode'],
+        //        } as GeocodingHit)
+        //        return {
+        //            name: res.mainText,
+        //            osm_id: '' + hit.id,
+        //            osm_type: hit.type,
+        //            query: parseResult.query,
+        //            tags: hit.tags,
+        //            icon: parseResult.icon,
+        //            coordinate: hit.point,
+        //            address: res.secondText,
+        //        } as POI
+        //    })
+        //const bbox = getBBoxPoints(pois.map(p => p.coordinate))
+        //if (bbox) {
+        //    if (parseResult.location) Dispatcher.dispatch(new SetBBox(bbox))
+        //    Dispatcher.dispatch(new SetPOIs(pois))
+        //} else {
+        //    console.warn(
+        //        'invalid bbox for points ' + JSON.stringify(pois) + ' result was: ' + JSON.stringify(parseResult),
+        //    )
+        //}
     }
 
     // because of the static method we need to inject the Translation object as otherwise jest has a problem

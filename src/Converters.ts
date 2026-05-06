@@ -56,57 +56,19 @@ export function metersToShortText(meters: number, showDistanceInMiles: boolean) 
  * the commercial GraphHopper geocoding API.
  */
 export function prepareHit(hit: GeocodingHit) {
-    hit.street = hit.street ? hit.street : (hit.properties.street || null)
-    hit.name = hit.name ? hit.name : (hit.properties.name || '')
-    hit.housenumber = hit.housenumber ? hit.housenumber : (hit.properties.housenumber || null)
-    hit.city = hit.properties.city || ''
-    hit.postcode = hit.properties.postcode || ''
-    hit.state = hit.properties.state || ''
-    hit.country = hit.properties.country || ''
+    hit.name = hit.name  || ''
+    hit.railway = hit.railway  || ''
+    hit['railway:ref'] = hit['railway:ref']  || ''
     return hit
 }
 
 export function hitToItem(hit: GeocodingHit) {
-    const mainText =
-        hit.street && hit.name.indexOf(hit.street) >= 0
-            ? hit.street + (hit.housenumber ? ' ' + hit.housenumber : '')
-            : hit.name
+    const mainText = [hit.name, hit['railway:ref']].filter(h => (h != null))
+        .join(', ')
+    const secondText = hit.railway ? hit.railway : ''
     return {
         mainText: mainText,
-        secondText: toSecondText(hit, mainText),
-    }
-}
-
-function toSecondText(hit: GeocodingHit, mainText: string) {
-    let result =
-        hit.street && mainText.indexOf(hit.street) < 0
-            ? hit.street + (hit.housenumber ? ' ' + hit.housenumber : '') + ', '
-            : ''
-    result += toCity(hit)
-    if (hit.state && !result.includes(hit.state)) result += (result ? ', ' : '') + hit.state
-    if (hit.country) result += (result ? ', ' : '') + hit.country
-    return result
-}
-
-function toCity(hit: GeocodingHit) {
-    if (hit.city && hit.postcode) return hit.postcode + ' ' + hit.city
-    if (hit.city) return hit.city
-    if (hit.postcode) return hit.postcode
-    return ''
-}
-
-export function nominatimHitToItem(hit: GeocodingHit) {
-    const name = hit.name ? hit.name : hit.country
-    const street = hit.street ? hit.street + (hit.housenumber ? ' ' + hit.housenumber : '') : ''
-    const mainText = hit.street && name && name.indexOf(hit.street) == 0 ? street : (name ? name.split(',')[0] : '')
-    return {
-        mainText: mainText,
-        secondText:
-            (!mainText.includes(street) && street.length > 0 ? street + ', ' : '') +
-            (!mainText.includes(hit.postcode) && hit.postcode ? hit.postcode + ' ' : '') +
-            (!mainText.includes(hit.city) && hit.city ? hit.city + ', ' : '') +
-            (!mainText.includes(hit.state) && hit.state ? hit.state + ', ' : '') +
-            hit.country,
+        secondText: secondText,
     }
 }
 

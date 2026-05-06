@@ -121,35 +121,8 @@ export default class NavBar {
         if (parsedPoints.some(p => !p.isInitialized && p.queryText.length > 0)) {
             const promises = parsedPoints.map(p => {
                 if (p.isInitialized) return Promise.resolve(p)
-                const result = AddressParseResult.parse(p.queryText, false)
-                if (result.hasPOIs() && result.location) {
-                    // two stage POI search: 1. use extracted location to get coordinates 2. do reverse geocoding with this coordinates
-                    return getApi()
-                        .geocode(result.location)
-                        .then(res => {
-                            if (res.features.length == 0) return p
-                            getApi()
-                                .reverseGeocode(result.query, res.features[0].extent)
-                                .then(res => AddressParseResult.handleGeocodingResponse(res, result))
-                            return p
-                        })
-                }
-                return (
-                    getApi()
-                        .geocode(p.queryText)
-                        .then(res => {
-                            if (res.features.length == 0) return p
-                            return {
-                                ...p,
-                                queryText: res.features[0].name,
-                                coordinate: { lat: res.features[0].point.lat, lng: res.features[0].point.lng },
-                                isInitialized: true,
-                            }
-                        })
-                        // if the geocoding request fails we just keep the point as it is, just as if no results were found
-                        .catch(() => p)
-                )
-            })
+                return null
+            }).filter(p => (p != null))
             const points = await Promise.all(promises)
             NavBar.dispatchQueryPoints(points)
         } else {

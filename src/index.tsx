@@ -47,7 +47,7 @@ AddressParseResult.setPOITriggerPhrases(getTranslation())
 
 // use graphhopper api key from url or try using one from the config
 const apiKey = url.searchParams.has('key') ? url.searchParams.get('key') : config.keys.graphhopper
-setApi(config.routingApi, config.geocodingApi, apiKey || '')
+setApi(config.routingApi, config.geocodingApi, config.reverseGeocodingEnabled)
 
 const initialCustomModelStr = url.searchParams.get('custom_model')
 const queryStore = new QueryStore(getApi(), initialCustomModelStr)

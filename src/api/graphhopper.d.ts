@@ -133,9 +133,9 @@ export interface ReverseGeocodingHit {
     readonly point: Coordinate
 }
 
-export interface GeocodingResult {
-    readonly features: GeocodingHit[]
-}
+//export interface GeocodingResult {
+//    readonly features: GeocodingHit[]
+//}
 
 export interface PhotonPoint {
     readonly type: string
@@ -158,19 +158,10 @@ export interface PhotonHitProperties {
 }
 
 export interface GeocodingHit {
-    point: Coordinate
-    readonly geometry: PhotonPoint
-    extent: Bbox
-    readonly properties: PhotonHitProperties
+    latitude: number
+    longitude: number
     osm_id: string
-    osm_type: string
-    osm_key: string
-    osm_value: string
-    name: string
-    country: string
-    city: string
-    state: string
-    street?: string | null
-    housenumber?: string | null
-    postcode: string
+    name?: string
+    railway?: string
+    "railway:ref"?: string
 }

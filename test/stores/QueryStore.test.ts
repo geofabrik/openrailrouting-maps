@@ -2,7 +2,7 @@ import Api from '@/api/Api'
 import {
     ApiInfo,
     Bbox,
-    GeocodingResult,
+    GeocodingHit,
     ReverseGeocodingHit,
     RoutingArgs,
     RoutingResult,
@@ -29,7 +29,7 @@ class ApiMock implements Api {
         this.callback = callback
     }
 
-    geocode(query: string): Promise<GeocodingResult> {
+    geocode(query: string): Promise<GeocodingHit[]> {
         throw Error('not implemented')
     }
 
@@ -50,6 +50,10 @@ class ApiMock implements Api {
     }
 
     supportsGeocoding(): boolean {
+        return false
+    }
+
+    supportsReverseGeocoding(): boolean {
         return false
     }
 }

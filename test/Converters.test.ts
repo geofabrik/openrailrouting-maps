@@ -1,4 +1,4 @@
-import { textToCoordinate, nominatimHitToItem, hitToItem, milliSecondsToText } from '@/Converters'
+import { textToCoordinate, hitToItem, milliSecondsToText } from '@/Converters'
 
 describe('Converters', function () {
     describe('milliSecondsToText', function () {
@@ -92,78 +92,6 @@ describe('Converters', function () {
                     postcode: '02977',
                 } as any),
             ).toEqual({ mainText: 'Am Wasserturm', secondText: '02977 Hoyerswerda - Wojerecy, Saxony, Germany' })
-        })
-    })
-
-    describe('nominatimHitToItem', function () {
-        it('nominatim city', function () {
-            expect(
-                nominatimHitToItem({
-                    name: '02977 Hoyerswerda - Wojerecy, Germany',
-                    country: 'Germany',
-                    city: 'Hoyerswerda - Wojerecy',
-                    state: 'Saxony',
-                    county: 'Bautzen',
-                    postcode: '02977',
-                } as any),
-            ).toEqual({ mainText: '02977 Hoyerswerda - Wojerecy', secondText: 'Saxony, Germany' })
-        })
-
-        it('nominatim poi', function () {
-            expect(
-                nominatimHitToItem({
-                    name: 'GraphHopper GmbH, Kirchstraße 17, 02977 Hoyerswerda - Wojerecy, Germany',
-                    country: 'Germany',
-                    city: 'Hoyerswerda - Wojerecy',
-                    state: 'Saxony',
-                    street: 'Kirchstraße',
-                    housenumber: '17',
-                    county: 'Bautzen',
-                    postcode: '02977',
-                } as any),
-            ).toEqual({
-                mainText: 'GraphHopper GmbH',
-                secondText: 'Kirchstraße 17, 02977 Hoyerswerda - Wojerecy, Saxony, Germany',
-            })
-        })
-
-        it('nominatim poi - ignore name', function () {
-            expect(
-                nominatimHitToItem({
-                    name: 'An der Schule, 02977 Hoyerswerda - Wojerecy, Germany',
-                    country: 'Germany',
-                    city: 'Hoyerswerda - Wojerecy',
-                    state: 'Saxony',
-                    street: 'An der Schule',
-                    county: 'Bautzen',
-                    postcode: '02977',
-                } as any),
-            ).toEqual({ mainText: 'An der Schule', secondText: '02977 Hoyerswerda - Wojerecy, Saxony, Germany' })
-        })
-
-        it('nominatim city 2', function () {
-            expect(
-                nominatimHitToItem({
-                    name: '02977 Hoyerswerda, Deutschland',
-                    country: 'Deutschland',
-                    city: 'Hoyerswerda',
-                    state: 'Saxony',
-                    county: 'Bautzen',
-                    postcode: '02977',
-                } as any),
-            ).toEqual({ mainText: '02977 Hoyerswerda', secondText: 'Saxony, Deutschland' })
-        })
-
-        it('nominatim city 3', function () {
-            expect(
-                nominatimHitToItem({
-                    name: 'Wittensee, something else',
-                    country: 'Deutschland',
-                    city: 'Groß Wittensee',
-                    state: 'Schleswig-Holstein',
-                    county: 'Rendsburg-Eckernförde',
-                } as any),
-            ).toEqual({ mainText: 'Wittensee', secondText: 'Groß Wittensee, Schleswig-Holstein, Deutschland' })
         })
     })
 })

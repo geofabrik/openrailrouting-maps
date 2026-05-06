@@ -62,13 +62,13 @@ export default function AddressInput(props: AddressInputProps) {
 
             hits.forEach(hit => {
                 const obj = hitToItem(prepareHit(hit))
-                const point = {lat: hit.geometry.coordinates[1], lng: hit.geometry.coordinates[0]}
+                const point = {lat: hit.latitude, lng: hit.longitude}
                 items.push(
                     new GeocodingItem(
                         obj.mainText,
                         obj.secondText,
                         point,
-                        hit.extent ? hit.extent : getBBoxFromCoord(point)
+                        getBBoxFromCoord(point)
                     )
                 )
             })
@@ -156,10 +156,10 @@ export default function AddressInput(props: AddressInputProps) {
                             getApi()
                                 .geocode(text)
                                 .then(result => {
-                                    if (result && result.features.length > 0) {
-                                        const hit: GeocodingHit = result.features[0]
+                                    if (result && result.length > 0) {
+                                        const hit: GeocodingHit = result[0]
                                         const res = hitToItem(prepareHit(hit))
-                                        props.onLocationSelected(res.mainText, res.secondText, hit.point)
+                                        props.onLocationSelected(res.mainText, res.secondText, { lng: hit.longitude, lat: hit.latitude })
                                     } else if (item instanceof GeocodingItem) {
                                         props.onLocationSelected(item.mainText, item.secondText, item.point)
                                     }
@@ -419,7 +419,7 @@ class Geocoder {
                 ? { lat: point[0], lon: point[1], location_bias_scale: '0.5', zoom: '' + (zoom + 1) }
                 : {}
             const result = await this.api.geocode(query, options)
-            const hits = Geocoder.filterDuplicates(result.features)
+            const hits = Geocoder.filterDuplicates(result)
             if (currentId === this.requestId) this.onSuccess(query, hits)
         } catch (reason) {
             throw Error('Could not get geocoding results because: ' + reason)
@@ -486,10 +486,8 @@ export class ReverseGeocoder {
                     zoom: '9',
                 }
                 const fwdSearch = await this.api.geocode(parseResult.location, options)
-                if (fwdSearch.features.length > 0) {
-                    const bbox = fwdSearch.features[0].extent
-                        ? fwdSearch.features[0].extent
-                        : getBBoxFromCoord(fwdSearch.features[0].point, 0.01)
+                if (fwdSearch.length > 0) {
+                    const bbox = getBBoxFromCoord({ lng: fwdSearch[0].longitude, lat: fwdSearch[0].latitude }, 0.01)
                     if (bbox) hits = await this.api.reverseGeocode(parseResult.query, bbox)
                 }
             } else {

@@ -4,7 +4,7 @@ import Api from '@/api/Api'
 import {
     ApiInfo,
     Bbox,
-    GeocodingResult,
+    GeocodingHit,
     Path,
     ReverseGeocodingHit,
     RoutingArgs,
@@ -74,7 +74,7 @@ function createEmptyQueryPoint(): QueryPoint {
 }
 
 class DummyApi implements Api {
-    geocode(query: string): Promise<GeocodingResult> {
+    geocode(query: string): Promise<GeocodingHit[]> {
         throw Error('not implemented')
     }
 
@@ -93,6 +93,10 @@ class DummyApi implements Api {
     routeWithDispatch(args: RoutingArgs): void {}
 
     supportsGeocoding(): boolean {
+        return false
+    }
+
+    supportsReverseGeocoding(): boolean {
         return false
     }
 }
