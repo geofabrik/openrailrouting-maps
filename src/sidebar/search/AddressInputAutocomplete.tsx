@@ -18,7 +18,9 @@ export class GeocodingItem implements AutocompleteItem {
     }
 
     toText() {
-        return this.mainText + ', ' + this.secondText
+        if (this.mainText.length && this.secondText.length)
+            return this.mainText + ' (' + this.secondText + ')'
+        return this.mainText.length ? this.mainText : this.secondText
     }
 }
 

@@ -63,9 +63,10 @@ export function prepareHit(hit: GeocodingHit) {
 }
 
 export function hitToItem(hit: GeocodingHit) {
-    const mainText = [hit.name, hit['railway:ref']].filter(h => (h != null))
-        .join(', ')
-    const secondText = hit.railway ? hit.railway : ''
+    const mainText = (hit.name != null && hit.name.length && hit['railway:ref'] != null && hit['railway:ref'].length) ?
+        hit.name + ' [' + hit['railway:ref'] + ']'
+        : (hit.name != null && hit.name.length) ? hit.name : (hit['railway:ref'] || '')
+    const secondText = hit.railway != null ? hit.railway : ''
     return {
         mainText: mainText,
         secondText: secondText,
