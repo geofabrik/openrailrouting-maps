@@ -1,4 +1,5 @@
 import { ApiImpl } from '@/api/Api'
+import { interpolateHcl } from 'd3-interpolate'
 
 export const SURFACE_COLORS: Record<string, string> = {
     // Paved (greens)
@@ -144,17 +145,25 @@ export function getSpeedThresholds(profile: string): number[] {
 }
 
 export function getSpeedColor(speed: number, thresholds: number[]): string {
+    const colors = SPEED_COLORS
     for (let i = 0; i < thresholds.length; i++) {
-        if (speed < thresholds[i]) return SPEED_COLORS[i]
+        if (speed <= thresholds[i]) {
+            const lc = colors[i]
+            const uc = colors[i + 1]
+            const ls = i > 0 ? thresholds[i - 1] : 0
+            const us = thresholds[i]
+            const d = (speed - ls) / (us - ls)
+            const col = interpolateHcl(lc, uc)(d)
+            return col
+        }
     }
-    return SPEED_COLORS[Math.min(thresholds.length, SPEED_COLORS.length - 1)]
+    return colors[Math.min(thresholds.length + 2, colors.length - 1)]
 }
 
-export function getSpeedLabels(thresholds: number[]): string[] {
+export function getSpeedLabels(thresholds: number[]): number[] {
     return [
-        `< ${thresholds[0]}`,
-        ...thresholds.slice(0, -1).map((t, i) => `${t}\u2013${thresholds[i + 1]}`),
-        `\u2265 ${thresholds[thresholds.length - 1]}`,
+        0,
+        ...thresholds,
     ]
 }
 

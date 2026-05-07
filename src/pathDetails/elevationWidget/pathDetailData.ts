@@ -153,9 +153,9 @@ export function transformPathDetail(
             coordinates: coordinates.slice(from, to + 1).map(c => [c[0], c[1]] as [number, number]),
         }))
         const labels = getSpeedLabels(thresholds)
-        legend = labels.map((lbl, i) => ({
-            label: lbl,
-            color: SPEED_COLORS[Math.min(i, SPEED_COLORS.length - 1)],
+        legend = labels.map((speed, i) => ({
+            label: `${speed}`,
+            color: getSpeedColor(speed, thresholds),
         }))
     } else if (type === 'line') {
         // Other numeric values - use gradient coloring
