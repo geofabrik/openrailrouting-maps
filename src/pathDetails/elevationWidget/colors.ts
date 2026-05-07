@@ -1,5 +1,6 @@
 import { ApiImpl } from '@/api/Api'
 import { interpolateHcl } from 'd3-interpolate'
+import * as config from 'config'
 
 export const SURFACE_COLORS: Record<string, string> = {
     // Paved (greens)
@@ -131,17 +132,18 @@ export const INCLINE_CATEGORIES: InclineCategory[] = [
 export const SPEED_COLORS = ['#F44336', '#FF9800', '#FFD54F', '#66BB6A', '#2E7D32']
 
 export function getSpeedThresholds(profile: string): number[] {
-    const isMotorVehicle =
-        (profile.includes('car') && !profile.includes('cargobike')) ||
-        profile.includes('truck') ||
-        profile.includes('scooter') ||
-        profile.includes('bus') ||
-        profile.includes('motorcycle')
-    const isFootLike = ApiImpl.isFootLike(profile)
-
-    if (isMotorVehicle) return [30, 50, 80]
-    if (isFootLike) return [3, 4, 5]
-    return [5, 10, 15, 20] // bike-like default
+    // Set sensible defaults for speeds per profile
+    const defaultSpeeds = [40, 80, 160, 250]
+    const profilesConfig: {[index: string]:any} = config.profiles
+    const profileName = (profilesConfig[profile] || { }).profile || null
+    if (profileName == null) {
+        return defaultSpeeds
+    }
+    const configuredProfile = config.profileSpeeds.find(p => p.profile === profileName)
+    if (configuredProfile != null) {
+        return configuredProfile.speedColors || defaultSpeeds
+    }
+    return defaultSpeeds
 }
 
 export function getSpeedColor(speed: number, thresholds: number[]): string {

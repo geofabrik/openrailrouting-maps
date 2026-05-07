@@ -67,6 +67,35 @@ const config = {
     //
     // E.g. the 'bike' entry will add a "bike" profile for which we send a request with the specified 'details' parameter. You can even change the profile itself when you specify
     // bike: { profile: 'raw_bike', ... }
+    profiles: {
+        'TGV 320 km/h': {
+            profile: 'tgv_all',
+        },
+        'freight train 120 km/h': {
+            profile: 'non_tgv',
+        },
+        'tramtrain 100 km/h': {
+            profile: 'tramtrain',
+        },
+        'any track': {
+            profile: 'all_tracks',
+        },
+        'any track, 1435 mm gauge only': {
+            profile: 'all_tracks_1435',
+        },
+    },
+
+    // Define separate thresholds for the color range of certain profiles
+    profileSpeeds: [
+        {
+            profile: 'non_tgv',
+            speedColors: [40, 60, 100, 120],
+        },
+        {
+            profile: 'tramtrain',
+            speedColors: [15, 30, 50, 70],
+        },
+    ],
 
     // You can 'collapse' or group certain profiles to reduce the number of profiles in the panel. Instead they're listed in the settings but still a profile icon is shown.
     // Note: the name of the group must be the default option for this group.

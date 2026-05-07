@@ -7,6 +7,10 @@ declare module 'config' {
     interface ProfileGroup {
         readonly options: { profile: string }[]
     }
+    interface ProfileSpeeds {
+        readonly profile: string
+        readonly speedColors: number[]
+    }
 
     const routingApi: string
     const geocodingApi: string
@@ -46,6 +50,7 @@ declare module 'config' {
     }
     const profile_group_mapping: Record<string, ProfileGroup>
     const profiles: object
+    const profileSpeeds: ProfileSpeeds[]
 }
 
 declare module 'react-responsive' {
