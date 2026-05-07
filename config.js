@@ -97,27 +97,8 @@ const config = {
         },
     ],
 
-    // You can 'collapse' or group certain profiles to reduce the number of profiles in the panel. Instead they're listed in the settings but still a profile icon is shown.
-    // Note: the name of the group must be the default option for this group.
+    // Profile group mapping is not supported by OpenRailRouting Maps.
     profile_group_mapping: {},
-    // profile_group_mapping: {
-    //  car: {
-    //    options: [
-    //      { profile: 'car' },
-    //      { profile: 'car_avoid_motorway' },
-    //      { profile: 'car_avoid_ferry' },
-    //      { profile: 'car_avoid_toll' }
-    //    ]
-    //  },
-    //  bike: {
-    //    options: [
-    //      { profile: 'bike' },
-    //      { profile: 'mtb' },
-    //      { profile: 'racingbike' },
-    //      { profile: 'ecargobike' }
-    //    ]
-    //  }
-    // }
 }
 
 // this is needed for jest (with our current setup at least)
