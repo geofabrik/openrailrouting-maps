@@ -3,15 +3,18 @@ import { CustomModel } from '@/utils'
 export const customModelExamples: { [key: string]: CustomModel } = {
     default_example: {
         distance_influence: 15,
-        priority: [{ if: 'road_environment == FERRY', multiply_by: '0.9' }],
+        priority: [{ if: 'road_environment == TUNNEL', multiply_by: '0.9' }],
         speed: [],
         areas: {
             type: 'FeatureCollection',
             features: [],
         },
     },
-    exclude_motorway: {
-        priority: [{ if: 'road_class == MOTORWAY', multiply_by: '0.0' }],
+    exclude_highspeed: {
+        priority: [{ if: 'max_speed > 160', multiply_by: '0.0' }],
+    },
+    only_1000mm_gauge: {
+        priority: [{ if: 'gauge != 1000 && gauge != 0', multiply_by: '0.0' }],
     },
     avoid_tunnels_bridges: {
         priority: [{ if: 'road_environment == TUNNEL || road_environment == BRIDGE', multiply_by: '0.1' }],
@@ -44,34 +47,19 @@ export const customModelExamples: { [key: string]: CustomModel } = {
             ],
         },
     },
-    simple_electric_car: {
-        distance_influence: 100,
-        priority: [
-            { if: 'average_slope >= 10', multiply_by: '0.7' },
-            { else_if: 'average_slope >=  7', multiply_by: '0.8' },
-            { else_if: 'average_slope >=  4', multiply_by: '0.9' },
-        ],
-        speed: [{ if: 'true', limit_to: '110' }],
-    },
     limit_speed: {
         speed: [
-            { if: 'true', limit_to: '100' },
-            { if: 'road_class == TERTIARY', limit_to: '80' },
+            { if: 'true', limit_to: '90' },
         ],
     },
-    cargo_bike: {
-        speed: [{ if: 'road_class == TRACK', limit_to: '2' }],
-        priority: [{ if: 'max_width < 1.5 || road_class == STEPS', multiply_by: '0' }],
-    },
-    bike_network: {
-        priority: [{ if: 'bike_network == MISSING', multiply_by: '0.5' }],
+    shortest: {
+        distance_influence: 2000,
     },
     combined: {
         distance_influence: 100,
-        speed: [{ if: 'road_class == TRACK || road_environment == FERRY || surface == DIRT', limit_to: '10' }],
+        speed: [{ if: 'true', limit_to: '90' }],
         priority: [
-            { if: 'road_environment == TUNNEL || toll == ALL', multiply_by: '0.5' },
-            { if: 'max_weight < 3 || max_height < 2.5', multiply_by: '0.0' },
+            { if: 'road_environment == TUNNEL', multiply_by: '0.5' },
         ],
     },
 }
